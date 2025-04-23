@@ -1,6 +1,8 @@
 import './App.css'
 import { useState } from 'react'
 import confetti from 'canvas-confetti'
+import xIcon from './assets/x.svg';
+import oIcon from './assets/o.svg'; // Adjust the path if necessary
 
 const fireConfetti = () => {
   var count = 200;
@@ -23,7 +25,7 @@ const fireConfetti = () => {
   });
   fire(0.35, {
     spread: 100
-,
+    ,
     decay: 0.91,
     scalar: 0.8
   });
@@ -39,14 +41,20 @@ const fireConfetti = () => {
   });
 };
 
-
 const TURNS = {
-  X: 'x',
+  X: '+',
   O: 'o'
 }
 
 const Square = ({ children, isSelected, updateBoard, index }) => {
-  const className = `square ${isSelected ? 'is-selected' : ''}`
+  const isPlusSign = children?.props?.children === TURNS.X;
+  console.log(isPlusSign);
+
+  console.log("Contenido del cuadrado:", children);
+
+
+  const className = `square ${isSelected ? 'is-selected' : ''} ${isPlusSign ? 'plus-sign' : ''}`;
+
   const handleClick = () => {
     updateBoard(index)
   }
@@ -56,17 +64,14 @@ const Square = ({ children, isSelected, updateBoard, index }) => {
     </div>
   )
 }
-// quiero que LineOfWinner alaprezca aa travez de las posiciones boardToCheck[a] boardToCheck[b] y boardToCheck[c]
 
 const LineOfWinner = ({ winnerCombo }) => {
   if (!winnerCombo) return null;
 
-  // Busca el objeto correspondiente en WINNER_COMBOS
   const winnerComboObj = WINNER_COMBOS.find(comboObj =>
     comboObj.combo.every((val, index) => val === winnerCombo[index])
   );
 
-  // Asegúrate de que se encontró un objeto de combo
   if (!winnerComboObj) return null;
 
   const { top, left, angle, width } = winnerComboObj;
@@ -86,7 +91,7 @@ const LineOfWinner = ({ winnerCombo }) => {
 };
 
 const WINNER_COMBOS = [
-  { combo: [0, 1, 2], top: '13%', left: '5%' },
+  { combo: [0, 1, 2], top: '13.7%', left: '5%' },
   { combo: [3, 4, 5], top: '47.9%', left: '5%' },
   { combo: [6, 7, 8], top: '82.5%', left: '5%' },
   { combo: [0, 3, 6], top: '5%', left: '17.5%', angle: '90' },
@@ -105,6 +110,9 @@ function App() {
 
   const [winnerCombo, setWinnerCombo] = useState(null)
 
+  const [winnerXGames, setWinnerXGames] = useState(0);
+  const [winnerOGames, setWinnerOGames] = useState(0);
+
   const checkWinner = (boardToCheck) => {
     for (const { combo } of WINNER_COMBOS) {
       const [a, b, c] = combo;
@@ -113,6 +121,14 @@ function App() {
         boardToCheck[a] === boardToCheck[c]) {
         setWinner(boardToCheck[a]);
         setWinnerCombo(combo); // Asigna la combinación ganadora a winnerCombo
+
+        if (boardToCheck[a] === TURNS.X) {
+          setWinnerXGames(winnerXGames + 1);
+        } else {
+          setWinnerOGames(winnerOGames + 1);
+        }
+
+
         return boardToCheck[a];
       }
     }
@@ -125,9 +141,18 @@ function App() {
     setWinner(null)
   }
 
+  const resetAllGame = () => {
+    setBoard(Array(9).fill(null))
+    setTurn(TURNS.X)
+    setWinner(null)
+    setWinnerXGames(0);
+    setWinnerOGames(0);
+  }
+
   const checkEndGame = (newBoard) => {
     return newBoard.every((square) => square !== null)
   }
+
 
   const updateBoard = (index) => {
     if (board[index] || winner) return
@@ -136,6 +161,7 @@ function App() {
     newBoard[index] = turn
     setBoard(newBoard)
     const newTurn = turn === TURNS.X ? TURNS.O : TURNS.X
+    console.log(newTurn);
     setTurn(newTurn)
     console.log(newBoard);
 
@@ -152,7 +178,7 @@ function App() {
     <>
       <main className='board'>
         <h1>Tic Tac Toe</h1>
-        <button onClick={resetGame}>Reiniciar</button>
+        <button onClick={resetAllGame}>Reiniciar</button>
         <section className='game relative'>
           {
             board.map((square, index) => {
@@ -162,7 +188,7 @@ function App() {
                   index={index}
                   updateBoard={updateBoard}
                 >
-                  <span className='w-[40px] h-[40px]'>{square}</span>
+                  <span className='w-[40px] h-[40px] text-[57px]'>{square}</span>
                 </Square>
               )
             })
@@ -176,12 +202,14 @@ function App() {
 
         </section>
 
-        <section className='turn'>
+        <section className='turn w-full'>
           <Square isSelected={turn === TURNS.X}>
-            <span className='w-[40px] h-[40px]'>{TURNS.X}</span>
+            <span className=''>{TURNS.X}</span>
+            <span className=''>{winnerXGames}</span>
           </Square>
           <Square isSelected={turn === TURNS.O}>
-            <span className='w-[40px] h-[40px]'>{TURNS.O}</span>
+            <span className=''>{TURNS.O}</span>
+            <span className=''>{winnerOGames}</span>
           </Square>
         </section>
 

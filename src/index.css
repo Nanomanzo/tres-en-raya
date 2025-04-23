@@ -72,9 +72,12 @@ body {
   display: flex;
   justify-content: center;
   margin: 15px auto;
-  width: fit-content;
   position: relative;
   border-radius: 10px;
+}
+
+.turn .square:first-child span:first-child {
+  transform: rotate(45deg);
 }
 
 .turn .square,
@@ -88,6 +91,14 @@ body {
 .square.is-selected {
   color: #fff;
   background: #09f;
+}
+
+section.turn>div.square {
+  width: 50%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px 0 20px;
 }
 
 .winner {
@@ -135,20 +146,27 @@ body {
 }
 
 .line-of-winner {
-  background-size: 200% 100%; 
+  background-size: 200% 100%;
   background-image: linear-gradient(to left, transparent 50%, #eee 50%);
-  animation: fill-animation 0.3s ease forwards; 
+  animation: fill-animation 0.3s ease forwards;
   animation-delay: 0.5s;
-  visibility: hidden; 
+  visibility: hidden;
   animation-fill-mode: forwards;
+  border-radius: 20px;
 }
+
+.square.plus-sign span {
+  transform: rotate(45deg);
+}
+
 @keyframes fill-animation {
   0% {
-    background-position: 100% 0; 
-    visibility: visible; 
+    background-position: 100% 0;
+    visibility: visible;
   }
+
   100% {
-    background-position: 0% 0; 
-    visibility: visible; 
+    background-position: 0% 0;
+    visibility: visible;
   }
 }
